@@ -14,53 +14,21 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y python3 python3-pip ffmpeg
+          sudo apt install -y python3 
+python3-pip ffmpeg
           pip3 install soundcloud-downloader
 
       - name: Download SoundCloud Playlist
         env:
-          PLAYLIST_URL: ${{ secrets.SOUNDCLOUD_URL }}
+          PLAYLIST_URL: $
+{{ secrets.SOUNDCLOUD_URL }}
         run: |
           mkdir -p downloads
-          scdl -l "$PLAYLIST_URL" -o downloads/ --path-template "{artist}/{title}"
+          scdl -l "$PLAYLIST_URL" -o
+downloads/ --path-template "{artist}/{title}"
 
       - name: Upload playlist to artifact
         uses: actions/upload-artifact@v3
         with:
           name: soundcloud-playlist
           path: downloads
-     runs-on: ubuntu-latest
- 
-     steps:
-       - name: Checkout code
-         uses: actions/checkout@v4
- 
-       - name: Install FFmpeg
-         run: sudo apt-get update && sudo apt-get install -y ffmpeg
- 
-       - name: Set up Python
-         uses: actions/setup-python@v5
-         with:
-           python-version: '3.11'
- 
-       - name: Install Poetry
-         run: |
-           curl -sSL https://install.python-poetry.org | python3 -
-           echo "$HOME/.local/bin" >> $GITHUB_PATH
- 
-       - name: Install dependencies
-         run: poetry install
- 
-       - name: Run downloader
-         run: |
-           poetry run python -m soundclouddownloader.cli_entry \
-             --url "${{ github.event.inputs.playlist_url }}" \
-             --output "${{ github.event.inputs.output_folder }}" \
-             $([[ "${{ github.event.inputs.zip_files }}" == "true" ]] && echo "--zip")
-             --output "${{ github.event.inputs.output_folder }}"
- 
-       - name: Upload output files
-         uses: actions/upload-artifact@v4
-         with:
-           name: playlist-output
-           path: ${{ github.event.inputs.output_folder }}
